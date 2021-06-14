@@ -10,11 +10,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using TaskManagementSystem.Domain.Common.Entities;
 using TaskManagementSystem.Domain.Common.Entities.Auditing;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using TaskManagementSystem.Domain.OrganizationUnitManagement.Entities;
+using TaskManagementSystem.Domain.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace TaskManagementSystem.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
         private static readonly MethodInfo ConfigureGlobalFiltersMethodInfo = typeof(ApplicationDbContext)
                                                                                  .GetMethod(nameof(ConfigureGlobalFilters), BindingFlags.Instance | BindingFlags.NonPublic);
@@ -26,9 +28,8 @@ namespace TaskManagementSystem.Infrastructure.Persistence
             _currentUserService = currentUserService;
         }
 
-        //public DbSet<ToDoTask> ToDoTasks { get; set; }
-
-        //public DbSet<Person> Persons { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<OrganizationUnit> OrganizationUnits { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

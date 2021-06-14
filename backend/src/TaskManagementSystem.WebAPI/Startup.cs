@@ -8,9 +8,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
-using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using TaskManagementSystem.Application;
+using TaskManagementSystem.Application.Common.Exceptions;
 using TaskManagementSystem.Application.Common.Interfaces;
+using TaskManagementSystem.Application.Identity;
+using TaskManagementSystem.Application.OrganizationUnitManagement;
+using TaskManagementSystem.Domain;
 using TaskManagementSystem.Domain.Common.Repositories;
+using TaskManagementSystem.Domain.Identity;
+using TaskManagementSystem.Domain.Identity.Entities;
+using TaskManagementSystem.Infrastructure;
 using TaskManagementSystem.Infrastructure.Persistence;
 using TaskManagementSystem.Infrastructure.Services;
 using TaskManagementSystem.Web.Helpers;
@@ -33,25 +41,12 @@ namespace TaskManagementSystem.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddLogger(Configuration);
-            services.AddCors(options =>
-            {
-                options.AddPolicy(name: DefaultCorsPolicyName,
-                    builder => builder.WithOrigins(Configuration["App:CorsOrigins"]
-                                                    .Split(",", StringSplitOptions.RemoveEmptyEntries))
-                                                    .AllowAnyHeader()
-                                                    .AllowAnyMethod());
-            });
-            services.AddDbContext<ApplicationDbContext>(options =>
-               options.UseSqlServer(
-                   Configuration.GetConnectionString("Default"),
-                   b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                    .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDomain();
 
-            services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
+            services.AddApplication();
 
-            services.AddTransient<IDateTimeService, DateTimeService>();
+            services.AddInfrastructure(Configuration);
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
 
@@ -62,9 +57,10 @@ namespace TaskManagementSystem.WebAPI
             services.AddControllers()
                     .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining(typeof(ValidationException)))
                     .AddNewtonsoftJson();
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TaskManagementSystem.Web", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TaskManagementSystem.WebAPI", Version = "v1" });
             });
         }
 

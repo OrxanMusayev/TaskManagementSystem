@@ -1,7 +1,7 @@
 ﻿using System;
 using TaskManagementSystem.Domain.Common.Entities.Auditing;
 
-namespace TaskManagementSystem.Domain.Entities
+namespace TaskManagementSystem.Domain.OrganizationUnitManagement.Entities
 {
     public class OrganizationUnit: FullAuditedEntity<int>
     {

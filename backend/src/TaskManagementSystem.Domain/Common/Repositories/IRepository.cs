@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace TaskManagementSystem.Domain.Common.Repositories
 {
-    public interface IRepository<TEntity, in TPrimaryKey> : IDisposable where TEntity : Entity<TPrimaryKey>
+    public interface IRepository<TEntity, in TPrimaryKey> : IDisposable where TEntity : IEntity<TPrimaryKey>
     {
         IQueryable<TEntity> GetAll();
 
