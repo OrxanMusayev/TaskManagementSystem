@@ -22,9 +22,8 @@
    
    For example, to add a new migration from the root folder:
 
-    `dotnet ef migrations add "InitialCreate" --project src\TaskManagementSystem.Infrastructure --startup-project 
-    src\TaskManagementSystem.WebAPI
-    --output-dir Persistence\Migrations`
+    `dotnet ef migrations add "InitialCreate" --project src\TaskManagementSystem.Infrastructure 
+    --startup-project src\TaskManagementSystem.WebAPI --output-dir Persistence\Migrations`
     
    (Or you can use `Add-Migration` command to add migration.)
 
