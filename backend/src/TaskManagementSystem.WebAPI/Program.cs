@@ -13,7 +13,7 @@ namespace TaskManagementSystem.WebAPI
             try
             {
                 LoggerFactory.CreateStartupLoggerInstance();
-                Log.Information("Starting TaskManagementSystem.Web");
+                Log.Information("Starting TaskManagementSystem.WebAPI");
                 CreateHostBuilder(args).Build().Run();
             }
             catch (Exception ex)
