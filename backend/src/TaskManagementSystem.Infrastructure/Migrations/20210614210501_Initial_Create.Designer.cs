@@ -10,8 +10,8 @@ using TaskManagementSystem.Infrastructure.Persistence;
 namespace TaskManagementSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210613175738_Initial_create")]
-    partial class Initial_create
+    [Migration("20210614210501_Initial_Create")]
+    partial class Initial_Create
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -245,10 +245,9 @@ namespace TaskManagementSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("TaskManagementSystem.Domain.OrganizationUnitManagement.Entities.OrganizationUnit", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
@@ -283,6 +282,30 @@ namespace TaskManagementSystem.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrganizationUnits");
+                });
+
+            modelBuilder.Entity("TaskManagementSystem.Domain.OrganizationUnitManagement.Entities.UserOrganizationUnit", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OrganizationUnitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "OrganizationUnitId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("UserOrganizationUnits");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -334,6 +357,18 @@ namespace TaskManagementSystem.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("TaskManagementSystem.Domain.OrganizationUnitManagement.Entities.UserOrganizationUnit", b =>
+                {
+                    b.HasOne("TaskManagementSystem.Domain.Identity.Entities.ApplicationUser", null)
+                        .WithMany("OrganizationUnits")
+                        .HasForeignKey("ApplicationUserId");
+                });
+
+            modelBuilder.Entity("TaskManagementSystem.Domain.Identity.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("OrganizationUnits");
                 });
 #pragma warning restore 612, 618
         }

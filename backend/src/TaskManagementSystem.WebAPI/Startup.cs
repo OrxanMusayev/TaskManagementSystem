@@ -2,6 +2,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,7 @@ using TaskManagementSystem.Infrastructure.Persistence;
 using TaskManagementSystem.Infrastructure.Services;
 using TaskManagementSystem.Web.Helpers;
 using TaskManagementSystem.Web.Services;
+using TaskManagementSystem.WebAPI.Helpers;
 
 namespace TaskManagementSystem.WebAPI
 {
@@ -54,9 +56,16 @@ namespace TaskManagementSystem.WebAPI
 
             services.AddHealthChecks();
 
-            services.AddControllers()
-                    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining(typeof(ValidationException)))
-                    .AddNewtonsoftJson();
+            services.AddRouting(option =>
+            {
+                option.ConstraintMap["slugify"] = typeof(SlugifyParameterTransformer);
+            });
+
+            services.AddControllers(options =>
+            {
+                options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
+            }).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining(typeof(ValidationException)))
+              .AddNewtonsoftJson();
 
             services.AddSwaggerGen(c =>
             {

@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using FluentValidation.Validators;
 using Microsoft.AspNetCore.Identity;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementSystem.Application.Identity.DTOs;
@@ -8,12 +10,13 @@ using TaskManagementSystem.Application.OrganizationUnitManagement.DTOs;
 using TaskManagementSystem.Domain.Identity;
 using TaskManagementSystem.Domain.Identity.Entities;
 
-namespace TaskManagementSystem.Application.AccountManagement.DTOs
+namespace TaskManagementSystem.Application.OrganizationUnitManagement.DTOs
 {
     public class UserOrganizationUnitDto
     {
         public IdentityUserCreateDto IdentityUserDto { get; set; }
         public OrganizationUnitCreateDto OrganizationUnitDto { get; set; }
+        public IdentityUserRolesDto IdentityUserRolesDto { get; set; }
     }
 
     public class UserOrganizationUnitValidator : AbstractValidator<UserOrganizationUnitDto>
@@ -39,8 +42,8 @@ namespace TaskManagementSystem.Application.AccountManagement.DTOs
                 .MustAsync(BeUniqueEmail).WithMessage("This email already exists.");
 
             RuleFor(v => v.IdentityUserDto.Password)
-                .NotEmpty().WithMessage("Password is required.")
-                .MinimumLength(6).WithMessage("Password length must be greater than 6 simvols.");
+                .NotEmpty().WithMessage("Password is required.");
+                //.MinimumLength(6).WithMessage("Password length must be greater than 6 simvols.");
 
             RuleFor(v => v.OrganizationUnitDto.Name)
                 .NotEmpty().WithMessage("Name is required.")

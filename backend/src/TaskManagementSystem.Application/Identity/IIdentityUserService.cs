@@ -11,6 +11,9 @@ namespace TaskManagementSystem.Application.Identity
 {
     public interface IIdentityUserService
     {
-        Task<ApplicationUser> CreateAsync(IdentityUserCreateDto input);
+        Task<IdentityUserDto> CreateAsync(IdentityUserCreateDto input);
+        Task<IdentityResult> SetRolesAsync(Guid userId, IdentityUserRolesDto input);
+        Task SetOrganizationUnitAsync(Guid userId, Guid ouId);
+
     }
 }

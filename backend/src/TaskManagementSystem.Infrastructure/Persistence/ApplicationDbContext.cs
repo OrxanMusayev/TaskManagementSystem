@@ -30,6 +30,7 @@ namespace TaskManagementSystem.Infrastructure.Persistence
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<OrganizationUnit> OrganizationUnits { get; set; }
+        public DbSet<UserOrganizationUnit> UserOrganizationUnits { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
