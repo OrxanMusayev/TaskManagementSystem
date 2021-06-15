@@ -3,15 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskManagementSystem.Application.Common.Interfaces;
 using TaskManagementSystem.Domain.Common.Repositories;
 using TaskManagementSystem.Domain.Identity.Entities;
 using TaskManagementSystem.Infrastructure.Persistence;
-using TaskManagementSystem.Infrastructure.Services;
 
 namespace TaskManagementSystem.Infrastructure
 {
@@ -31,7 +25,6 @@ namespace TaskManagementSystem.Infrastructure
                     }).AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
-            services.AddTransient<IDateTimeService, DateTimeService>();
 
             return services;
         }

@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TaskManagementSystem.Application.Identity.DTOs;
 using TaskManagementSystem.Application.OrganizationUnitManagement.DTOs;
+using TaskManagementSystem.Application.TaskManagement.DTOs;
 using TaskManagementSystem.Domain.Identity.Entities;
 using TaskManagementSystem.Domain.OrganizationUnitManagement.Entities;
+using TaskManagementSystem.Domain.TaskManagement.Entities;
 
 namespace TaskManagementSystem.Application
 {
@@ -15,8 +12,9 @@ namespace TaskManagementSystem.Application
     {
         public AutoMapperProfile()
         {
-            CreateMap<OrganizationUnit, OrganizationUnitCreateDto>().ReverseMap();
+            CreateMap<OrganizationUnitCreateDto, OrganizationUnit>();
             CreateMap<IdentityUserDto, ApplicationUser>();
+            CreateMap<TaskCreateDto, OrganizationUnitTask>();
         }
     }
 }

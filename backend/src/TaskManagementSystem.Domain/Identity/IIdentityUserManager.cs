@@ -10,6 +10,7 @@ namespace TaskManagementSystem.Domain.Identity
     public interface IIdentityUserManager
     {
         Task<ApplicationUser> CreateAsync(ApplicationUser input, string password);
+        Task<List<string>> GetUsersEmailsById(List<Guid> ids);
         Task<ApplicationUser> FindByNameAsync(string userName);
         Task<ApplicationUser> FindByEmailAsync(string email);
         Task<ApplicationUser> FindByIdAsync(Guid id);

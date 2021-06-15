@@ -1,27 +1,16 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Reflection;
 using TaskManagementSystem.Application;
 using TaskManagementSystem.Application.Common.Exceptions;
 using TaskManagementSystem.Application.Common.Interfaces;
-using TaskManagementSystem.Application.Identity;
-using TaskManagementSystem.Application.OrganizationUnitManagement;
 using TaskManagementSystem.Domain;
-using TaskManagementSystem.Domain.Common.Repositories;
-using TaskManagementSystem.Domain.Identity;
-using TaskManagementSystem.Domain.Identity.Entities;
 using TaskManagementSystem.Infrastructure;
-using TaskManagementSystem.Infrastructure.Persistence;
-using TaskManagementSystem.Infrastructure.Services;
 using TaskManagementSystem.Web.Helpers;
 using TaskManagementSystem.Web.Services;
 using TaskManagementSystem.WebAPI.Helpers;
@@ -30,8 +19,6 @@ namespace TaskManagementSystem.WebAPI
 {
     public class Startup
     {
-        private const string DefaultCorsPolicyName = "Default";
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;

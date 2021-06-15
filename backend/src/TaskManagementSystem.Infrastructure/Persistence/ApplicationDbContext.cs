@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using TaskManagementSystem.Domain.OrganizationUnitManagement.Entities;
 using TaskManagementSystem.Domain.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
+using TaskManagementSystem.Domain.TaskManagement.Entities;
 
 namespace TaskManagementSystem.Infrastructure.Persistence
 {
@@ -31,6 +32,8 @@ namespace TaskManagementSystem.Infrastructure.Persistence
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<OrganizationUnit> OrganizationUnits { get; set; }
         public DbSet<UserOrganizationUnit> UserOrganizationUnits { get; set; }
+        public DbSet<OrganizationUnitTask> Tasks { get; set; }
+        public DbSet<TaskUsers> TaskUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

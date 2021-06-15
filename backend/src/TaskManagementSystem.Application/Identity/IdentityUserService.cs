@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TaskManagementSystem.Application.Identity.DTOs;
 using TaskManagementSystem.Domain.Identity;
@@ -33,6 +34,8 @@ namespace TaskManagementSystem.Application.Identity
             var result = await _userManager.CreateAsync(user, input.Password);
             return _mapper.Map<ApplicationUser, IdentityUserDto>(result);
         }
+
+        public async Task<List<string>> GetUserEmails(List<Guid> userIds) => await _userManager.GetUsersEmailsById(userIds);
 
         public async Task<IdentityResult> SetRolesAsync(Guid userId, IdentityUserRolesDto input)
         {

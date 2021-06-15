@@ -39,6 +39,12 @@ namespace TaskManagementSystem.Domain.Identity
             return user;
         }
 
+        public async Task<List<string>> GetUsersEmailsById(List<Guid> ids)
+        {
+            var emailAddresses = _userManager.Users.Where(u => ids.Contains(u.Id)).Select(u => u.Email).ToList();
+            return emailAddresses;
+        }
+
         public async Task<ApplicationUser> FindByNameAsync(string userName)
         {
             var user = await _userManager.FindByNameAsync(userName);
