@@ -3,9 +3,11 @@
    ## Technologies
 
    - ASP.NET Core 5
-   - AutoMapper
+   - MS SQL Server
    - Entity Framework Core 5
+   - AutoMapper
    - FluentValidation
+   
 
    The project is built on **Clean Architecture**. Dependencies for each project are separated. 
    
