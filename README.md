@@ -26,5 +26,7 @@
     --startup-project src\TaskManagementSystem.WebAPI --output-dir Persistence\Migrations`
     
    (Or you can use `Add-Migration` command to add migration.)
-
+    
+   (Note: change mail settings from appsettings.json for using email sending service correctly) 
+   
    
