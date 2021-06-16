@@ -1,31 +1,30 @@
 ﻿using FluentValidation;
 using FluentValidation.Validators;
-using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementSystem.Application.Identity.DTOs;
-using TaskManagementSystem.Application.OrganizationUnitManagement.DTOs;
 using TaskManagementSystem.Domain.Identity;
-using TaskManagementSystem.Domain.Identity.Entities;
 
 namespace TaskManagementSystem.Application.OrganizationUnitManagement.DTOs
 {
-    public class OrganizationUnitCreateDto
+    public class OrganizationUnitUserCreateDto
     {
         public IdentityUserCreateDto IdentityUserDto { get; set; }
-        public OrganizationUnitDto OrganizationUnitDto { get; set; }
+        public Guid OrganizationUnitId { get; set; }
     }
 
-    public class UserOrganizationUnitValidator : AbstractValidator<OrganizationUnitCreateDto>
+    public class OrganizationUnitUserCreateDtoValidator : AbstractValidator<OrganizationUnitUserCreateDto>
     {
         private readonly IIdentityUserManager _userManager;
 
-        public UserOrganizationUnitValidator()
+        public OrganizationUnitUserCreateDtoValidator()
         {
         }
-        public UserOrganizationUnitValidator(IIdentityUserManager userManager)
+        public OrganizationUnitUserCreateDtoValidator(IIdentityUserManager userManager)
         {
             _userManager = userManager;
 
@@ -43,16 +42,6 @@ namespace TaskManagementSystem.Application.OrganizationUnitManagement.DTOs
             RuleFor(v => v.IdentityUserDto.Password)
                 .NotEmpty().WithMessage("Password is required.")
                 .MinimumLength(6).WithMessage("Password length must be greater than 6 simvols.");
-
-            RuleFor(v => v.OrganizationUnitDto.Name)
-                .NotEmpty().WithMessage("Name is required.")
-                .MaximumLength(100).WithMessage("Name must not exceed 100 characters.")
-                .MustAsync(BeUniqueTitle).WithMessage("This email already exists.");
-
-            RuleFor(v => v.OrganizationUnitDto.PhoneNumber)
-                .NotEmpty().WithMessage("Phone number is required.")
-                .Matches(@"\(?\d{3}\)?-? *\d{3}-? *-?\d{4}").WithMessage("Phone number is not correct format")
-                .MustAsync(BeUniqueTitle).WithMessage("This name already exists.");
         }
 
         public async Task<bool> BeUniqueTitle(string userName, CancellationToken cancellationToken)

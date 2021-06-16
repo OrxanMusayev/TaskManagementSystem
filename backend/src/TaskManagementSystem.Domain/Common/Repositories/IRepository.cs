@@ -57,6 +57,6 @@ namespace TaskManagementSystem.Domain.Common.Repositories
 
         Task DeleteWhere(Expression<Func<TEntity, bool>> predicate);
 
-        Task Commit(CancellationToken cancellationToken);
+        Task Commit(CancellationToken cancellationToken = default);
     }
 }

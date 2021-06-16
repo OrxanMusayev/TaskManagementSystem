@@ -7,10 +7,10 @@ using TaskManagementSystem.Application.Identity.DTOs;
 
 namespace TaskManagementSystem.Application.OrganizationUnitManagement.DTOs
 {
-    public class UserOrganizationUnitDto
+    public  class UserCreateDto
     {
         public IdentityUserCreateDto IdentityUserDto { get; set; }
-        public OrganizationUnitCreateDto OrganizationUnitDto { get; set; }
-        public IdentityUserRolesDto IdentityUserRolesDto { get; set; }
+        public Guid OrganizationUnitId { get; set; }
+        public string[] RoleNames { get; set; }
     }
 }

@@ -13,7 +13,10 @@ namespace TaskManagementSystem.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
-            builder.ToTable("ApplicationUsers");
+            builder.ToTable("Users");
+            builder.Property(p => p.Name).IsRequired().HasMaxLength(50);
+            builder.Property(p => p.Surname).IsRequired().HasMaxLength(50);
+            builder.Property(p => p.Email).IsRequired().HasMaxLength(100);
         }
     }
 }

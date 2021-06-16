@@ -138,12 +138,12 @@ namespace TaskManagementSystem.Infrastructure.Persistence
 
         public async Task Update(TEntity entity)
         {
-            _dbContext.Entry(entity).State = EntityState.Modified;
+            await Task.Run(() => _dbContext.Entry(entity).State = EntityState.Modified);
         }
 
         public async Task Delete(TEntity entity)
         {
-            _dbContext.Entry(entity).State = EntityState.Deleted;
+            await Task.Run(() => _dbContext.Entry(entity).State = EntityState.Deleted);
         }
 
         public async Task DeleteWhere(Expression<Func<TEntity, bool>> predicate)
@@ -152,7 +152,7 @@ namespace TaskManagementSystem.Infrastructure.Persistence
 
             foreach (var entity in entities)
             {
-                _dbContext.Entry(entity).State = EntityState.Deleted;
+                await Task.Run(() => _dbContext.Entry(entity).State = EntityState.Deleted);
             }
         }
 
@@ -173,7 +173,7 @@ namespace TaskManagementSystem.Infrastructure.Persistence
             return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
         }
 
-        public async Task Commit(CancellationToken cancellationToken = new CancellationToken())
+        public async Task Commit(CancellationToken cancellationToken = default)
         {
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
