@@ -11,6 +11,6 @@ namespace TaskManagementSystem.Application.OrganizationUnitManagement.DTOs
     {
         public IdentityUserCreateDto IdentityUserDto { get; set; }
         public Guid OrganizationUnitId { get; set; }
-        public IdentityUserRolesDto IdentityUserRolesDto { get; set; }
+        public string[] RoleNames { get; set; }
     }
 }

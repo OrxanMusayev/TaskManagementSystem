@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using TaskManagementSystem.Domain.Common.Entities;
 using TaskManagementSystem.Domain.Common.Entities.Auditing;
+using TaskManagementSystem.Domain.TaskManagement.Enums;
 
 namespace TaskManagementSystem.Domain.TaskManagement.Entities
 {

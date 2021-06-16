@@ -12,8 +12,8 @@ namespace TaskManagementSystem.Application
     {
         public AutoMapperProfile()
         {
-            CreateMap<OrganizationUnitCreateDto, OrganizationUnit>();
-            CreateMap<IdentityUserDto, ApplicationUser>();
+            CreateMap<OrganizationUnitDto, OrganizationUnit>();
+            CreateMap<IdentityUserDto, ApplicationUser>().ReverseMap();
             CreateMap<TaskCreateDto, OrganizationUnitTask>();
         }
     }

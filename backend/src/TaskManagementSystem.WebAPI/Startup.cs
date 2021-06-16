@@ -1,11 +1,16 @@
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
+using System.Text;
 using TaskManagementSystem.Application;
 using TaskManagementSystem.Application.Common.Exceptions;
 using TaskManagementSystem.Application.Common.Interfaces;
@@ -47,6 +52,29 @@ namespace TaskManagementSystem.WebAPI
             {
                 option.ConstraintMap["slugify"] = typeof(SlugifyParameterTransformer);
             });
+            services.AddSession();
+            services.AddDistributedMemoryCache();
+            services.AddAuthentication(auth =>
+            {
+                auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(token =>
+            {
+                token.RequireHttpsMetadata = false;
+                token.SaveToken = true;
+                token.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetValue<string>("JWT:Key"))),
+                    ValidateIssuer = true,
+                    ValidIssuer = Configuration.GetValue<string>("App:Selfurl"),
+                    ValidateAudience = true,
+                    ValidAudience = Configuration.GetValue<string>("App:Selfurl"),
+                    RequireExpirationTime = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
 
             services.AddControllers(options =>
             {
@@ -78,6 +106,18 @@ namespace TaskManagementSystem.WebAPI
             app.UseRouting();
 
             app.UseCookiePolicy();
+
+            app.UseSession();
+
+            app.Use(async (context, next) =>
+            {
+                string JWTToken = context.Session.GetString("JWTToken");
+                if (!string.IsNullOrEmpty(JWTToken))
+                {
+                    context.Request.Headers.Add("Authorization", "Bearer " + JWTToken);
+                }
+                await next();
+            });
 
             app.UseAuthentication();
             app.UseAuthorization();

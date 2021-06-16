@@ -11,6 +11,5 @@ namespace TaskManagementSystem.Application.Identity.DTOs
 {
     public class IdentityUserRolesDto
     {
-        public string[] RoleNames { get; set; }
     }
 }

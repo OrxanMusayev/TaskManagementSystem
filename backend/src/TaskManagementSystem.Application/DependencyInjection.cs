@@ -2,6 +2,7 @@
 using System.Reflection;
 using TaskManagementSystem.Application.Identity;
 using TaskManagementSystem.Application.OrganizationUnitManagement;
+using TaskManagementSystem.Application.TaskManagement;
 
 namespace TaskManagementSystem.Application
 {
@@ -12,6 +13,7 @@ namespace TaskManagementSystem.Application
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<IIdentityUserService, IdentityUserService>();
             services.AddScoped<IOrganizationUnitService, OrganizationUnitService>();
+            services.AddScoped<ITaskManagementService, TaskManagementService>();
 
             return services;
         }

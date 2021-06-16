@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using TaskManagementSystem.Domain.Common.Repositories;
+using TaskManagementSystem.Domain.Emailing;
 using TaskManagementSystem.Domain.Identity.Entities;
 using TaskManagementSystem.Infrastructure.Persistence;
 
@@ -25,7 +26,7 @@ namespace TaskManagementSystem.Infrastructure
                     }).AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
-
+            services.AddScoped<IEmailSender, EmailSender>();
             return services;
         }
     }

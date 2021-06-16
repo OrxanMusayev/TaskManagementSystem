@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TaskManagementSystem.Application.Identity;
@@ -15,23 +18,23 @@ namespace TaskManagementSystem.WebAPI.Controllers
 
         public OrganizationUnitController(
             IOrganizationUnitService organizationUnitService,
-            IIdentityUserService userService) : base()
+            IIdentityUserService userService,
+            IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _organizationUnitService = organizationUnitService;
             _identityUserService = userService;
         }
 
         [HttpPost("organization")]
-        public async Task<IdentityUserDto> CreateOrganization(UserOrganizationUnitDto input)
+        public async Task<IdentityUserDto> CreateOrganization(OrganizationUnitCreateDto input)
         {
-            input.IdentityUserRolesDto.RoleNames = GetAdminRoleNames();
 
             var organizationUnitId = await _organizationUnitService.CreateAsync(input.OrganizationUnitDto);
 
             var userCreateDto = new UserCreateDto
             {
                 IdentityUserDto = input.IdentityUserDto,
-                IdentityUserRolesDto = input.IdentityUserRolesDto,
+                RoleNames = GetAdminRoleNames() ,
                 OrganizationUnitId = organizationUnitId
             };
             var user = await SetUserData(userCreateDto);
@@ -39,15 +42,15 @@ namespace TaskManagementSystem.WebAPI.Controllers
         }
 
         [HttpPost("organization-user")]
-        public async Task<IdentityUserDto> CreateOrganizationUser(UserCreateDto input)
+        //[Authorize(Roles = "admin")]
+        public async Task<IdentityUserDto> CreateOrganizationUser(OrganizationUnitUserCreateDto input)
         {
-            input.IdentityUserRolesDto.RoleNames = GetUserRoleNames();
             input.IdentityUserDto.Password = GetDefaultPassword();
 
             var userCreateDto = new UserCreateDto
             {
                 IdentityUserDto = input.IdentityUserDto,
-                IdentityUserRolesDto = input.IdentityUserRolesDto,
+                RoleNames = GetUserRoleNames(),
                 OrganizationUnitId = input.OrganizationUnitId
             };
             var user = await SetUserData(userCreateDto);
@@ -56,23 +59,23 @@ namespace TaskManagementSystem.WebAPI.Controllers
 
         private string[] GetAdminRoleNames()
         {
-            List<string> list = new() { _configuration.GetSection("IdentityRole:Admininistrator:RoleName").Value };
+            List<string> list = new() { Configuration.GetValue<string>("IdentityRole:Administrator:RoleName") };
             List<string> roleNames = list;
             return roleNames.ToArray();
         }
 
         private string[] GetUserRoleNames()
         {
-            List<string> roleNames = new() { _configuration.GetSection("IdentityRole:User:RoleName").Value };
+            List<string> roleNames = new() { Configuration.GetValue<string>("IdentityRole:User:RoleName") };
             return roleNames.ToArray();
         }
 
-        private string GetDefaultPassword() => _configuration.GetSection("IdentityRole:User:DefaultPassword").Value;
+        private string GetDefaultPassword() => Configuration.GetValue<string>("IdentityRole:User:DefaultPassword");
 
         private async Task<IdentityUserDto> SetUserData(UserCreateDto input)
         {
             var user = await _identityUserService.CreateAsync(input.IdentityUserDto);
-            await _identityUserService.SetRolesAsync(user.Id, input.IdentityUserRolesDto);
+            await _identityUserService.SetRolesAsync(user.Id, input.RoleNames);
             await _identityUserService.SetOrganizationUnitAsync(user.Id, input.OrganizationUnitId);
             return user;
         }

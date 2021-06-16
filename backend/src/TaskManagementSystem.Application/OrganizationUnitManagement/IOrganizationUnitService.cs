@@ -7,6 +7,6 @@ namespace TaskManagementSystem.Application.OrganizationUnitManagement
 {
     public interface IOrganizationUnitService
     {
-        Task<Guid> CreateAsync(OrganizationUnitCreateDto input);
+        Task<Guid> CreateAsync(OrganizationUnitDto input);
     }
 }
