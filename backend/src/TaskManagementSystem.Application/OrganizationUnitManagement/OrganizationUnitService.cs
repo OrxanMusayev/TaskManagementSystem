@@ -21,7 +21,7 @@ namespace TaskManagementSystem.Application.OrganizationUnitManagement
             _mapper = mapper;
         }
 
-        public async Task<Guid> CreateAsync(OrganizationUnitCreateDto input)
+        public async Task<Guid> CreateAsync(OrganizationUnitDto input)
         {
             var organizationUnit = _mapper.Map<OrganizationUnit>(input);
             await _organizationUnitRepository.Add(organizationUnit);

@@ -20,12 +20,11 @@ namespace TaskManagementSystem.Application.TaskManagement.DTOs
         public TaskCreateDtoValidation()
         {
             RuleFor(v => v.Title)
-                .NotEmpty().WithMessage("User name is required.")
-                .MaximumLength(50).WithMessage("User name must not exceed 50 characters.");
+                .NotEmpty().WithMessage("Title is required.")
+                .MaximumLength(200).WithMessage("Title must not exceed 200 characters.");
 
             RuleFor(v => v.Description)
-                .NotEmpty().WithMessage("User name is required.")
-                .MaximumLength(50).WithMessage("User name must not exceed 50 characters.");
+                .NotEmpty().WithMessage("Description is required.");
         }
     }
 }

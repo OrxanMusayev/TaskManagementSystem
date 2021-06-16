@@ -11,6 +11,7 @@ using TaskManagementSystem.Application.TaskManagement.DTOs;
 using TaskManagementSystem.Domain.Common.Exceptions;
 using TaskManagementSystem.Domain.Common.Repositories;
 using TaskManagementSystem.Domain.Emailing;
+using TaskManagementSystem.Domain.Identity;
 using TaskManagementSystem.Domain.TaskManagement.Entities;
 
 namespace TaskManagementSystem.Application.TaskManagement
@@ -20,22 +21,20 @@ namespace TaskManagementSystem.Application.TaskManagement
         private readonly IRepository<OrganizationUnitTask, int> _taskRepository;
         private readonly IRepository<TaskUsers, int> _taskUsersRepository;
         private readonly IEmailSender _emailSender;
-        private readonly IIdentityUserService _identityUserService;
-        private readonly ILogger _logger;
+        private readonly IIdentityUserManager _identityUserManager;
         private readonly IMapper _mapper;
 
         public TaskManagementService(IRepository<OrganizationUnitTask, int> taskRepository,
                                      IRepository<TaskUsers, int> taskUsersRepository,
                                      IEmailSender emailSender,
-                                     IIdentityUserService identityUserService,
-                                     ILogger logger,
-                                     IMapper mapper)
+                                     IIdentityUserManager identityUserManager,
+                                     IMapper mapper
+                                     )
         {
             _taskRepository = taskRepository;
             _taskUsersRepository = taskUsersRepository;
             _emailSender = emailSender;
-            _identityUserService = identityUserService;
-            _logger = logger;
+            _identityUserManager = identityUserManager;
             _mapper = mapper;
         }
 
@@ -80,7 +79,7 @@ namespace TaskManagementSystem.Application.TaskManagement
 
         private async Task NotifyUsers(List<Guid> userIds, string taskTitle, string taskDescription)
         {
-            List<string> emailAddresses = await _identityUserService.GetUserEmails(userIds);
+            List<string> emailAddresses = await _identityUserManager.GetEmailsById(userIds);
 
             try
             {
@@ -88,7 +87,6 @@ namespace TaskManagementSystem.Application.TaskManagement
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error has occured when send email to users. Exception: {ex}");
                 throw new UserFriendlyException("Email could not send!");
             }
         }

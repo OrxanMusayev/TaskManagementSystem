@@ -23,6 +23,7 @@ namespace TaskManagementSystem.Domain.Emailing
         public async Task SendAsync(List<string> to, string subject, string body, bool isBodyHtml = true)
         {
             MailMessage mailMessage = new() { Subject = subject, Body = body, IsBodyHtml = isBodyHtml };
+            mailMessage.From = new(GetSmtpConfiguration<string>(EmailSettingNames.DefaultFromAddress));
             to.ForEach(address =>
             {
                 mailMessage.To.Add(address);
@@ -58,6 +59,7 @@ namespace TaskManagementSystem.Domain.Emailing
                     {
                         var password = GetSmtpConfiguration<string>(EmailSettingNames.Password);
                         smtpClient.Credentials = new NetworkCredential(userName, password);
+                        smtpClient.EnableSsl = true;
                     }
                 }
 

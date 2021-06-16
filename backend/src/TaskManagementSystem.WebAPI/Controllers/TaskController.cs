@@ -12,11 +12,13 @@ namespace TaskManagementSystem.WebAPI.Controllers
     {
         private readonly ITaskManagementService _taskManagementService;
 
-        public TaskController(ITaskManagementService taskManagementService)
+        public TaskController(ITaskManagementService taskManagementService,
+            IServiceProvider serviceProvider): base(serviceProvider)
         {
             _taskManagementService = taskManagementService;
         }
 
+        [HttpPost]
         public async Task<ActionResult<int>> CreateAndAssign(TaskCreateDto input)
         {
             var taskId = await _taskManagementService.CreateAndAssign(input);
