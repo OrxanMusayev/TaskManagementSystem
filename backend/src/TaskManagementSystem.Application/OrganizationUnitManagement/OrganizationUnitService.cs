@@ -25,5 +25,11 @@ namespace TaskManagementSystem.Application.OrganizationUnitManagement
             await _organizationUnitRepository.Add(organizationUnit);
             return organizationUnit.Id;
         }
+
+        public async Task<bool> IsOrganizationExists(Guid id)
+        {
+            var organization = await _organizationUnitRepository.Find(id);
+            return organization != null;
+        }
     }
 }

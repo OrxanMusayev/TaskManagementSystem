@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -7,7 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using TaskManagementSystem.Application.Identity;
 using TaskManagementSystem.Application.Identity.DTOs;
+using TaskManagementSystem.Application.OrganizationUnitManagement;
 using TaskManagementSystem.Application.OrganizationUnitManagement.DTOs;
+using TaskManagementSystem.Domain.Common.Exceptions;
 
 namespace TaskManagementSystem.WebAPI.Controllers
 {
@@ -15,27 +18,40 @@ namespace TaskManagementSystem.WebAPI.Controllers
     public class IdentityController : ApiController
     {
         private readonly IIdentityUserService _identityUserService;
+        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly IOrganizationUnitService _organizationUnitService;
 
         public IdentityController(IIdentityUserService identityUserService,
+                                  RoleManager<IdentityRole<Guid>> roleManager,
+                                  IOrganizationUnitService organizationUnitService,
                                   IServiceProvider serviceProvider): base(serviceProvider)
         {
             _identityUserService = identityUserService;
+            this._roleManager = roleManager;
+            this._organizationUnitService = organizationUnitService;
         }
 
         [HttpPost("create-user")]
         [Authorize(Roles = "admin")]
-        public async Task<IdentityUserDto> CreateOrganizationUser(OrganizationUnitUserCreateDto input)
+        public async Task<ActionResult<IdentityUserDto>> CreateOrganizationUser(OrganizationUnitUserCreateDto input)
         {
             input.IdentityUserDto.Password = GetDefaultPassword();
 
-            var userCreateDto = new UserCreateDto
+            if (await _organizationUnitService.IsOrganizationExists(input.OrganizationUnitId))
             {
-                IdentityUserDto = input.IdentityUserDto,
-                RoleNames = GetUserRoleNames(),
-                OrganizationUnitId = input.OrganizationUnitId
-            };
-            var user = await SetUserData(userCreateDto);
-            return user;
+                var userCreateDto = new UserCreateDto
+                {
+                    IdentityUserDto = input.IdentityUserDto,
+                    RoleNames = new[] { await GetUserRoleNames() },
+                    OrganizationUnitId = input.OrganizationUnitId
+                };
+                var user = await SetUserData(userCreateDto);
+                return Ok(user);
+            }
+            else {
+                return NotFound("There is no ogranization with given id");
+            }
+            
         }
 
         [HttpGet("user-details")]
@@ -47,10 +63,14 @@ namespace TaskManagementSystem.WebAPI.Controllers
 
         private string GetDefaultPassword() => Configuration.GetValue<string>("IdentityRole:User:DefaultPassword");
 
-        private string[] GetUserRoleNames()
+        private async Task<string> GetUserRoleNames()
         {
-            List<string> roleNames = new() { Configuration.GetValue<string>("IdentityRole:User:RoleName") };
-            return roleNames.ToArray();
+            string roleName = Configuration.GetValue<string>("IdentityRole:User:RoleName");
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                await _roleManager.CreateAsync(new IdentityRole<Guid>(roleName));
+            }
+            return roleName;
         }
 
         private async Task<IdentityUserDto> SetUserData(UserCreateDto input)

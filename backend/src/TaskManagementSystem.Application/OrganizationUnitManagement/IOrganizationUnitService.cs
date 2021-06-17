@@ -8,5 +8,7 @@ namespace TaskManagementSystem.Application.OrganizationUnitManagement
     public interface IOrganizationUnitService
     {
         Task<Guid> CreateAsync(OrganizationUnitDto input);
+
+        Task<bool> IsOrganizationExists(Guid id);
     }
 }
