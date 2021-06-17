@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using TaskManagementSystem.Domain.TaskManagement.Enums;
+﻿using TaskManagementSystem.Domain.TaskManagement.Enums;
 
 namespace TaskManagementSystem.Application.TaskManagement.DTOs
 {

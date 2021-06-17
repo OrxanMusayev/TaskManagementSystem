@@ -177,7 +177,6 @@ namespace TaskManagementSystem.Infrastructure.Persistence
 
             return expression;
         }
-
         #endregion
     }
 }

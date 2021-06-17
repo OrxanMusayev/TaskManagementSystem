@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using System;
 using System.Threading.Tasks;
-using TaskManagementSystem.Application.Identity;
-using TaskManagementSystem.Application.Identity.DTOs;
 using TaskManagementSystem.Application.OrganizationUnitManagement.DTOs;
 using TaskManagementSystem.Domain.Common.Repositories;
 using TaskManagementSystem.Domain.OrganizationUnitManagement.Entities;

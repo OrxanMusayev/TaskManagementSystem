@@ -3,29 +3,34 @@ using System.Linq;
 using TaskManagementSystem.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using System.Security.Claims;
 
 namespace TaskManagementSystem.Web.Services
 {
     public class CurrentUserService : ICurrentUserService
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         public CurrentUserService(IHttpContextAccessor httpContextAccessor)
         {
-            if (Guid.TryParse(GetHeaderValue(httpContextAccessor, "X-UserId"), out Guid userId))
-            {
-                UserId = userId;
-            }
+            _httpContextAccessor = httpContextAccessor;
+            UserId = GetUserId(httpContextAccessor);
         }
 
         public Guid? UserId { get; }
 
-        private string GetHeaderValue(IHttpContextAccessor httpContextAccessor, string headerKey)
+        private Guid GetUserId(IHttpContextAccessor httpContextAccessor)
         {
-            if (httpContextAccessor.HttpContext != null && httpContextAccessor.HttpContext.Request.Headers.TryGetValue(headerKey, out StringValues headerValues))
+            var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+            var claims = claimsIdentity.FindAll(ClaimTypes.NameIdentifier);
+            if (claims.Count()!=0)
             {
-                return headerValues.First();
+                return Guid.Parse(claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             }
-
-            return string.Empty;
+            else
+            {
+                return Guid.Empty;
+            }
         }
     }
 }

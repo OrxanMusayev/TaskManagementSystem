@@ -3,13 +3,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Security.Claims;
 using System.Text;
 using TaskManagementSystem.Application;
 using TaskManagementSystem.Application.Common.Exceptions;
@@ -19,6 +22,7 @@ using TaskManagementSystem.Infrastructure;
 using TaskManagementSystem.Web.Helpers;
 using TaskManagementSystem.Web.Services;
 using TaskManagementSystem.WebAPI.Helpers;
+using TaskManagementSystem.WebAPI.Services;
 
 namespace TaskManagementSystem.WebAPI
 {
@@ -42,9 +46,11 @@ namespace TaskManagementSystem.WebAPI
 
             services.AddInfrastructure(Configuration);
 
+            services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             services.AddHttpContextAccessor();
+
 
             services.AddHealthChecks();
 
@@ -52,29 +58,27 @@ namespace TaskManagementSystem.WebAPI
             {
                 option.ConstraintMap["slugify"] = typeof(SlugifyParameterTransformer);
             });
-            services.AddSession();
+
             services.AddDistributedMemoryCache();
+            services.AddSession();
+
             services.AddAuthentication(auth =>
             {
                 auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(token =>
-            {
-                token.RequireHttpsMetadata = false;
-                token.SaveToken = true;
-                token.TokenValidationParameters = new TokenValidationParameters
+            }).AddJwtBearer(options =>
                 {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetValue<string>("JWT:Key"))),
-                    ValidateIssuer = true,
-                    ValidIssuer = Configuration.GetValue<string>("App:Selfurl"),
-                    ValidateAudience = true,
-                    ValidAudience = Configuration.GetValue<string>("App:Selfurl"),
-                    RequireExpirationTime = true,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidAudience = Configuration.GetValue<string>("JWT:ValidAudience"),
+                        ValidIssuer = Configuration.GetValue<string>("JWT:ValidIssuer"),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
+                    };
+                });             
 
             services.AddControllers(options =>
             {
@@ -112,6 +116,7 @@ namespace TaskManagementSystem.WebAPI
             app.Use(async (context, next) =>
             {
                 string JWTToken = context.Session.GetString("JWTToken");
+
                 if (!string.IsNullOrEmpty(JWTToken))
                 {
                     context.Request.Headers.Add("Authorization", "Bearer " + JWTToken);

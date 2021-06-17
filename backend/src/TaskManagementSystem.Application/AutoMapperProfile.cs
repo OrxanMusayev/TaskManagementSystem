@@ -15,6 +15,7 @@ namespace TaskManagementSystem.Application
             CreateMap<OrganizationUnitDto, OrganizationUnit>();
             CreateMap<IdentityUserDto, ApplicationUser>().ReverseMap();
             CreateMap<TaskCreateDto, OrganizationUnitTask>();
+            CreateMap<OrganizationUnitTask, TaskDto>();
         }
     }
 }

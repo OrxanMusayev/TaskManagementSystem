@@ -3,48 +3,53 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TaskManagementSystem.Application.Identity;
 using TaskManagementSystem.Application.Identity.DTOs;
-using TaskManagementSystem.Application.OrganizationUnitManagement;
 using TaskManagementSystem.Application.OrganizationUnitManagement.DTOs;
 
 namespace TaskManagementSystem.WebAPI.Controllers
 {
-    public class OrganizationUnitController: ApiController
+    [Authorize]
+    public class IdentityController : ApiController
     {
-        private readonly IOrganizationUnitService _organizationUnitService;
         private readonly IIdentityUserService _identityUserService;
 
-        public OrganizationUnitController(
-            IOrganizationUnitService organizationUnitService,
-            IIdentityUserService userService,
-            IServiceProvider serviceProvider) : base(serviceProvider)
+        public IdentityController(IIdentityUserService identityUserService,
+                                  IServiceProvider serviceProvider): base(serviceProvider)
         {
-            _organizationUnitService = organizationUnitService;
-            _identityUserService = userService;
+            _identityUserService = identityUserService;
         }
 
-        [HttpPost("create-organization")]
-        public async Task<IdentityUserDto> CreateOrganization(OrganizationUnitCreateDto input)
+        [HttpPost("create-user")]
+        [Authorize(Roles = "admin")]
+        public async Task<IdentityUserDto> CreateOrganizationUser(OrganizationUnitUserCreateDto input)
         {
-
-            var organizationUnitId = await _organizationUnitService.CreateAsync(input.OrganizationUnitDto);
+            input.IdentityUserDto.Password = GetDefaultPassword();
 
             var userCreateDto = new UserCreateDto
             {
                 IdentityUserDto = input.IdentityUserDto,
-                RoleNames = GetAdminRoleNames() ,
-                OrganizationUnitId = organizationUnitId
+                RoleNames = GetUserRoleNames(),
+                OrganizationUnitId = input.OrganizationUnitId
             };
             var user = await SetUserData(userCreateDto);
             return user;
         }
 
-        private string[] GetAdminRoleNames()
+        [HttpGet("user-details")]
+        public UserDetailsDto GetUserDetails()
         {
-            List<string> list = new() { Configuration.GetValue<string>("IdentityRole:Administrator:RoleName") };
-            List<string> roleNames = list;
+            var userId = (Guid) CurrentUserService.UserId;
+            return _identityUserService.GetUserDetails(userId);
+        }
+
+        private string GetDefaultPassword() => Configuration.GetValue<string>("IdentityRole:User:DefaultPassword");
+
+        private string[] GetUserRoleNames()
+        {
+            List<string> roleNames = new() { Configuration.GetValue<string>("IdentityRole:User:RoleName") };
             return roleNames.ToArray();
         }
 
