@@ -23,10 +23,10 @@ namespace TaskManagementSystem.Infrastructure
                     {
                         options.Password.RequireNonAlphanumeric = false;
                         options.Password.RequireUppercase = false;
-                    }).AddEntityFrameworkStores<ApplicationDbContext>();
+                    }).AddEntityFrameworkStores<ApplicationDbContext>()
+                    .AddDefaultTokenProviders();
 
             services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
-            services.AddScoped<IEmailSender, EmailSender>();
             return services;
         }
     }

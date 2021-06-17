@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using System;
 using System.Threading.Tasks;
-using TaskManagementSystem.Application.Identity;
-using TaskManagementSystem.Application.Identity.DTOs;
 using TaskManagementSystem.Application.OrganizationUnitManagement.DTOs;
 using TaskManagementSystem.Domain.Common.Repositories;
 using TaskManagementSystem.Domain.OrganizationUnitManagement.Entities;
@@ -26,6 +24,12 @@ namespace TaskManagementSystem.Application.OrganizationUnitManagement
             var organizationUnit = _mapper.Map<OrganizationUnit>(input);
             await _organizationUnitRepository.Add(organizationUnit);
             return organizationUnit.Id;
+        }
+
+        public async Task<bool> IsOrganizationExists(Guid id)
+        {
+            var organization = await _organizationUnitRepository.Find(id);
+            return organization != null;
         }
     }
 }

@@ -42,6 +42,9 @@ namespace TaskManagementSystem.Domain.Identity
 
         public async Task<SignInResult> SignInAsync(string userName, string password, bool rememberMe) => await _signInManager.PasswordSignInAsync(userName, password, rememberMe, false);
 
+        public IQueryable<ApplicationUser> GetUsers() =>  _userManager.Users;
+
+        public IQueryable<ApplicationUser> GetById(Guid userId) => _userManager.Users.Where(u => u.Id == userId);
         public async Task<List<string>> GetEmailsById(List<Guid> ids) => _userManager.Users.Where(u => ids.Contains(u.Id)).Select(u => u.Email).ToList();
 
         public async Task<List<Claim>> GetClaimsAsync(ApplicationUser user) => new List<Claim>(await _userManager.GetClaimsAsync(user));

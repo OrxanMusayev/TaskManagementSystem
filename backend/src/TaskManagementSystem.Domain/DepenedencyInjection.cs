@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TaskManagementSystem.Domain.Emailing;
 using TaskManagementSystem.Domain.Identity;
 
 namespace TaskManagementSystem.Domain
@@ -13,6 +14,7 @@ namespace TaskManagementSystem.Domain
         public static IServiceCollection AddDomain(this IServiceCollection services)
         {
             services.AddScoped<IIdentityUserManager, IdentityUserManager>();
+            services.AddScoped<IEmailSender, EmailSender>();
             return services;
         }
     }

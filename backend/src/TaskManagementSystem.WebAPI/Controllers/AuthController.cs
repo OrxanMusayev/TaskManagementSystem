@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -29,13 +30,16 @@ namespace TaskManagementSystem.WebAPI.Controllers
             _tokenService = tokenService;
         }
 
-        [HttpGet("login")]
-        public async Task<AuthenticationResult> Login(LoginInput input)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginInput input)
         {
             var user = await _userService.FindByNameAsync(input.UserName);
             if (user == null)
             {
-                throw new UserFriendlyException("User not found");
+                return BadRequest(new AuthenticationResult
+                {
+                    Error = "User not found"
+                });
             }
 
             var signInResult = await _userService.SignInAsync(input);
@@ -43,16 +47,19 @@ namespace TaskManagementSystem.WebAPI.Controllers
             if (signInResult.Succeeded)
             {
                 var claims = await _userService.GetClaimsAsync(user);
-                if (claims == null)
+                if (claims == null || claims.Count == 0)
                 {
                     claims = await AddClaims(user);
                 }
 
                 var token = await _tokenService.GenerateJSONWebToken(input, claims.ToArray());
 
-                return token;
+                return Ok(token);
             }
-            throw new UserFriendlyException("Invalid user name or password");
+            return Unauthorized(new AuthenticationResult
+            {
+                Error = "Invalid user name or password"
+            });
         }
 
         [HttpPut("logout")]
@@ -62,15 +69,17 @@ namespace TaskManagementSystem.WebAPI.Controllers
         }
 
 
-        private async Task<List<Claim>> AddClaims(IdentityUserDto user)
+        private async Task<List<Claim>> AddClaims(ApplicationUser user)
         {
             List<Claim> claims;
             var roles = await _userService.GetRolesAsync(user);
 
             claims = new()
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
             foreach (var role in roles)

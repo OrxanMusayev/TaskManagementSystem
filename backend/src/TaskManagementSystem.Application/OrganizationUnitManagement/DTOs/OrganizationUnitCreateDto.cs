@@ -1,14 +1,9 @@
 ﻿using FluentValidation;
 using FluentValidation.Validators;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementSystem.Application.Identity.DTOs;
-using TaskManagementSystem.Application.OrganizationUnitManagement.DTOs;
 using TaskManagementSystem.Domain.Identity;
-using TaskManagementSystem.Domain.Identity.Entities;
 
 namespace TaskManagementSystem.Application.OrganizationUnitManagement.DTOs
 {
